@@ -33,15 +33,13 @@ struct SearchResultInfo: Codable {
 }
 
 struct Photo: Codable {
-    let id: String?
-    let owner: String?
-    let secret: String?
-    let server: String?
-    let farm: Int?
     let title: String?
+    let thumbnailRef: String?
+    let largerImageRef: String?
     
-    // May not be used commenting out for now to avoid data bloat
-//    let ispublic: Int?
-//    let isfriend: Int?
-//    let isfamily: Int?
+    enum CodingKeys: String, CodingKey {
+        case title = "title"
+        case thumbnailRef = "url_sq"
+        case largerImageRef = "url_q"
+    }
 }

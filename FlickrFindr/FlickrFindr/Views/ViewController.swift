@@ -24,7 +24,7 @@ class ViewController: UIViewController {
         
         networkController.searchImages(searchTerm: "Tiger", page: 2) { [weak self] (result, error) in
             self?.latestSearchResult = result
-            print(result)
+            print(result?.resultInfo.photos)
             print(error)
         }
     }

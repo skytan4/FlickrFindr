@@ -9,7 +9,7 @@
 import Foundation
 
 /* Example Reference
- https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=1508443e49213ff84d566777dc211f2a&text=tigers&per_page=25&page=&format=json&nojsoncallback=1
+ https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=1508443e49213ff84d566777dc211f2a&text=tigers&media=photos&extras=url_q%2C+url_sq&per_page=25&page=&format=json&nojsoncallback=1
 */
 
 struct NetworkController {
@@ -24,7 +24,7 @@ struct NetworkController {
     
     func searchImages(searchTerm: String, page: Int, resultsPerPage: Int = 25, callback: @escaping (SearchResult?, EndpointError?) -> Void) {
   
-        guard let imageSearchURL = URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(apiKey)&text=\(searchTerm)&per_page=\(resultsPerPage)&page=\(page)&format=json&nojsoncallback=1") else {
+        guard let imageSearchURL = URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(apiKey)&text=\(searchTerm)&media=photos&extras=url_q%2C+url_sq&per_page=\(resultsPerPage)&page=\(page)&format=json&nojsoncallback=1") else {
             callback(nil, .nilURL)
             return
         }
