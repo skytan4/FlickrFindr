@@ -12,6 +12,7 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
     var resultsTableView: UITableView?
     var searchController: UISearchController?
     var activityIndicator: UIActivityIndicatorView?
+    var fullSizeImageAlertView: UIAlertController?
     
     var latestSearchResult: SearchResult?
     var photosToDisplay: [Photo] = []
@@ -37,12 +38,12 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         
         resultsTableView = UITableView(frame: view.frame)
         activityIndicator?.center = resultsTableView!.center
-        resultsTableView!.register(PhotoTableViewCell.self, forCellReuseIdentifier: pictureCellReuseIdentifier)
+        resultsTableView?.register(PhotoTableViewCell.self, forCellReuseIdentifier: pictureCellReuseIdentifier)
         searchController = UISearchController(searchResultsController: nil)
    
-        resultsTableView!.tableHeaderView = searchController?.searchBar
-        resultsTableView!.delegate = self
-        resultsTableView!.dataSource = self
+        resultsTableView?.tableHeaderView = searchController?.searchBar
+        resultsTableView?.delegate = self
+        resultsTableView?.dataSource = self
         
         searchController?.delegate = self
         searchController?.dimsBackgroundDuringPresentation = false
@@ -86,6 +87,23 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         }
     }
     
+    func presentLargerImage(title: String, image: UIImage) {
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        
+        let imageAction = UIAlertAction(title: "", style: .default, handler: nil)
+        let newimage = image.withAlignmentRectInsets(UIEdgeInsets(top: 0, left: -50, bottom: 0, right: 40))
+        imageAction.setValue(newimage.withRenderingMode(.alwaysOriginal), forKey: "image")
+        imageAction.isEnabled = false
+        alert.addAction(imageAction)
+        
+        let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
+            alert.dismiss(animated: true, completion: nil)
+        }
+        alert.addAction(dismissAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
 }
 
 extension PhotoResultsViewController: UISearchBarDelegate {
@@ -126,7 +144,6 @@ extension PhotoResultsViewController: UITableViewDelegate, UITableViewDataSource
         let hasMorePages = currentPage + 1 <= totalPages
         
         if shouldFetchMore, hasMorePages, !isLoadingNextPage {
-            print("loading next page")
             searchForPicture(text: latestSearchText, page: currentPage + 1)
         }
         
@@ -139,6 +156,20 @@ extension PhotoResultsViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard let photo = photosToDisplay[safe: indexPath.row],
+            let largerImageURL = URL(string: photo.largerImageRef ?? ""),
+            let photoTitle = photo.title else { return }
+        
+        activityIndicator?.startAnimating()
+      
+        NetworkController.loadImage(url: largerImageURL) { [weak self] (image, error) in
+            guard let image = image else { return }
+            DispatchQueue.main.async { [weak self] in
+                self?.activityIndicator?.stopAnimating()
+                self?.presentLargerImage(title: photoTitle, image: image)
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
