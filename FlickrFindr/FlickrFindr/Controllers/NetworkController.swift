@@ -60,13 +60,15 @@ struct NetworkController {
         dataTask.resume()
     }
     
-    static func loadImage(url: URL, completed callBack: (UIImage?, EndpointError?) -> Void) {
-        do {
-            let imageData = try Data(contentsOf: url)
-            let image = UIImage(data: imageData)
-            callBack(image, nil)
-        } catch (let error) {
-            callBack(nil, .imageLoadFailed(error.localizedDescription))
+    static func loadImage(url: URL, completed callBack: @escaping (UIImage?, EndpointError?) -> Void) {
+        DispatchQueue.global().async {
+            do {
+                let imageData = try Data(contentsOf: url)
+                let image = UIImage(data: imageData)
+                callBack(image, nil)
+            } catch (let error) {
+                callBack(nil, .imageLoadFailed(error.localizedDescription))
+            }
         }
     }
     

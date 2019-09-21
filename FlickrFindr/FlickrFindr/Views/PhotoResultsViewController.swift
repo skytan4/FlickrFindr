@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  PhotoResultsViewController.swift
 //  FlickrFindr
 //
 //  Created by Skyler Tanner  on 9/18/19.
@@ -8,17 +8,18 @@
 
 import UIKit
 
-class ViewController: UIViewController, UISearchControllerDelegate {
-    var resultsTableController: UITableView?
+class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
+    var resultsTableView: UITableView?
     var searchController: UISearchController?
     var activityIndicator: UIActivityIndicatorView?
     
     var latestSearchResult: SearchResult?
     var photosToDisplay: [Photo] = []
+    var searchTerms: [String] = []
     var latestSearchText: String?
-    let defaultCellHeight: CGFloat = 75.0
-    
     private var isLoadingNextPage = false
+   
+    private let defaultCellHeight: CGFloat = 75.0
     private let pictureCellReuseIdentifier = "pictureCell"
     
     override func viewDidLoad() {
@@ -34,14 +35,14 @@ class ViewController: UIViewController, UISearchControllerDelegate {
         activityIndicator?.style = .whiteLarge
         activityIndicator?.color = .blue
         
-        resultsTableController = UITableView(frame: view.frame)
-        activityIndicator?.center = resultsTableController!.center
-        resultsTableController!.register(PhotoTableViewCell.self, forCellReuseIdentifier: pictureCellReuseIdentifier)
+        resultsTableView = UITableView(frame: view.frame)
+        activityIndicator?.center = resultsTableView!.center
+        resultsTableView!.register(PhotoTableViewCell.self, forCellReuseIdentifier: pictureCellReuseIdentifier)
         searchController = UISearchController(searchResultsController: nil)
    
-        resultsTableController!.tableHeaderView = searchController?.searchBar
-        resultsTableController!.delegate = self
-        resultsTableController!.dataSource = self
+        resultsTableView!.tableHeaderView = searchController?.searchBar
+        resultsTableView!.delegate = self
+        resultsTableView!.dataSource = self
         
         searchController?.delegate = self
         searchController?.dimsBackgroundDuringPresentation = false
@@ -50,7 +51,7 @@ class ViewController: UIViewController, UISearchControllerDelegate {
         
         definesPresentationContext = true
 
-        view.addSubview(resultsTableController!)
+        view.addSubview(resultsTableView!)
         view.addSubview(activityIndicator!)
     }
     
@@ -69,7 +70,7 @@ class ViewController: UIViewController, UISearchControllerDelegate {
             self?.isLoadingNextPage = false
             DispatchQueue.main.async { [weak self] in
                 self?.activityIndicator?.stopAnimating()
-                self?.resultsTableController?.reloadData()
+                self?.resultsTableView?.reloadData()
             }
         }
     }
@@ -81,16 +82,17 @@ class ViewController: UIViewController, UISearchControllerDelegate {
         NetworkController.cancelNetworkCalls()
         DispatchQueue.main.async { [weak self] in
             self?.activityIndicator?.stopAnimating()
-            self?.resultsTableController?.reloadData()
+            self?.resultsTableView?.reloadData()
         }
     }
     
 }
 
-extension ViewController: UISearchBarDelegate {
+extension PhotoResultsViewController: UISearchBarDelegate {
   
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
+        searchTerms.append(searchText)
         resetSearch()
         searchForPicture(text: searchText, page: 1)
     }
@@ -103,13 +105,13 @@ extension ViewController: UISearchBarDelegate {
    
 }
 
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension PhotoResultsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return photosToDisplay.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = resultsTableController?.dequeueReusableCell(withIdentifier: pictureCellReuseIdentifier) as? PhotoTableViewCell else {
+        guard let cell = resultsTableView?.dequeueReusableCell(withIdentifier: pictureCellReuseIdentifier) as? PhotoTableViewCell else {
             return UITableViewCell()
         }
         

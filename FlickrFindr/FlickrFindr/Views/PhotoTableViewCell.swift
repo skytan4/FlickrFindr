@@ -15,7 +15,7 @@ enum LoadingState {
 }
 
 class PhotoTableViewCell: UITableViewCell {
-    private let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    private let activityIndicator = UIActivityIndicatorView(style: .white)
     private let titleLabel = UILabel()
     private let photoImageView = UIImageView()
     
@@ -23,10 +23,13 @@ class PhotoTableViewCell: UITableViewCell {
         didSet {
             switch loadingState {
             case .notLoading:
+                activityIndicator.stopAnimating()
                 photoImageView.image = nil
             case .loading:
+                activityIndicator.startAnimating()
                 photoImageView.image = nil
             case let .loaded(img):
+                activityIndicator.stopAnimating()
                 photoImageView.image = img
             }
         }
@@ -48,8 +51,10 @@ class PhotoTableViewCell: UITableViewCell {
     private func setupView() {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.addSubview(titleLabel)
+        contentView.addSubview(activityIndicator)
         contentView.addSubview(photoImageView)
 
         let imageViewLeftConstraint = NSLayoutConstraint(item: photoImageView, attribute: .leading, relatedBy: .equal, toItem: contentView, attribute: .leading, multiplier: 1.0, constant: 1.0)
@@ -60,6 +65,15 @@ class PhotoTableViewCell: UITableViewCell {
                                     imageViewWidthConstraint,
                                     imageViewTopConstraint,
                                     imageViewBottomConstraint])
+        
+        let activityIndicatorWidthConstraint = NSLayoutConstraint(item: activityIndicator, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 75.0)
+        let activityIndicatorHeightConstraint = NSLayoutConstraint(item: activityIndicator, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 75.0)
+        let activityIndicatorCenterXConstraint = NSLayoutConstraint(item: activityIndicator, attribute: .centerX, relatedBy: .equal, toItem: photoImageView, attribute: .centerX, multiplier: 1.0, constant: 5.0)
+        let activityIndicatorCenterYConstraint = NSLayoutConstraint(item: activityIndicator, attribute: .centerY, relatedBy: .equal, toItem: photoImageView, attribute: .centerY, multiplier: 1.0, constant: -5.0)
+        contentView.addConstraints([activityIndicatorWidthConstraint,
+                                    activityIndicatorHeightConstraint,
+                                    activityIndicatorCenterXConstraint,
+                                    activityIndicatorCenterYConstraint])
         
         let titleLeftConstraint = NSLayoutConstraint(item: titleLabel, attribute: .leading, relatedBy: .equal, toItem: photoImageView, attribute: .trailing, multiplier: 1.0, constant: 5.0)
         let titleRightConstraint = NSLayoutConstraint(item: titleLabel, attribute: .trailing, relatedBy: .equal, toItem: contentView, attribute: .trailing, multiplier: 1.0, constant: -8.0)
@@ -92,8 +106,9 @@ class PhotoTableViewCell: UITableViewCell {
                 print("missing image")
                 return
             }
-            
-            self?.loadingState = .loaded(image)
+            DispatchQueue.main.async { [weak self] in
+                self?.loadingState = .loaded(image)
+            }
         }
     }
     

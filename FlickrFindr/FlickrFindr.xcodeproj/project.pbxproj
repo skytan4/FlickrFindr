@@ -8,8 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1C2B4AB6233314F0003645FD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4AB5233314F0003645FD /* AppDelegate.swift */; };
-		1C2B4AB8233314F0003645FD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4AB7233314F0003645FD /* ViewController.swift */; };
-		1C2B4ABB233314F0003645FD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C2B4AB9233314F0003645FD /* Main.storyboard */; };
+		1C2B4AB8233314F0003645FD /* PhotoResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4AB7233314F0003645FD /* PhotoResultsViewController.swift */; };
 		1C2B4ABE233314F0003645FD /* FlickrFindr.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4ABC233314F0003645FD /* FlickrFindr.xcdatamodeld */; };
 		1C2B4AC0233314F1003645FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C2B4ABF233314F1003645FD /* Assets.xcassets */; };
 		1C2B4AC3233314F1003645FD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C2B4AC1233314F1003645FD /* LaunchScreen.storyboard */; };
@@ -43,8 +42,7 @@
 /* Begin PBXFileReference section */
 		1C2B4AB2233314F0003645FD /* FlickrFindr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlickrFindr.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C2B4AB5233314F0003645FD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		1C2B4AB7233314F0003645FD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		1C2B4ABA233314F0003645FD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		1C2B4AB7233314F0003645FD /* PhotoResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoResultsViewController.swift; sourceTree = "<group>"; };
 		1C2B4ABD233314F0003645FD /* FlickrFindr.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FlickrFindr.xcdatamodel; sourceTree = "<group>"; };
 		1C2B4ABF233314F1003645FD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1C2B4AC2233314F1003645FD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -162,9 +160,8 @@
 		1C2B4AEC2333271B003645FD /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				1C2B4AB9233314F0003645FD /* Main.storyboard */,
 				1C2B4AC1233314F1003645FD /* LaunchScreen.storyboard */,
-				1C2B4AB7233314F0003645FD /* ViewController.swift */,
+				1C2B4AB7233314F0003645FD /* PhotoResultsViewController.swift */,
 				1C6CCCF62334A6D80041D849 /* PhotoTableViewCell.swift */,
 			);
 			path = Views;
@@ -276,7 +273,6 @@
 			files = (
 				1C2B4AC3233314F1003645FD /* LaunchScreen.storyboard in Resources */,
 				1C2B4AC0233314F1003645FD /* Assets.xcassets in Resources */,
-				1C2B4ABB233314F0003645FD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,7 +301,7 @@
 				1C6CCCF52334A13F0041D849 /* Photo.swift in Sources */,
 				1C2B4AE923331536003645FD /* NetworkController.swift in Sources */,
 				1C2B4ABE233314F0003645FD /* FlickrFindr.xcdatamodeld in Sources */,
-				1C2B4AB8233314F0003645FD /* ViewController.swift in Sources */,
+				1C2B4AB8233314F0003645FD /* PhotoResultsViewController.swift in Sources */,
 				1C2B4AE72333150D003645FD /* SearchResult.swift in Sources */,
 				1C6CCCFB2335C5340041D849 /* Collection+Safe.swift in Sources */,
 				1C6CCCF32334A11D0041D849 /* SearchResultInfo.swift in Sources */,
@@ -345,14 +341,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		1C2B4AB9233314F0003645FD /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				1C2B4ABA233314F0003645FD /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		1C2B4AC1233314F1003645FD /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
