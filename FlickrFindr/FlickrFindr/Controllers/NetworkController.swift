@@ -12,16 +12,16 @@ import UIKit
  https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=1508443e49213ff84d566777dc211f2a&text=tigers&media=photos&extras=url_q%2C+url_sq&per_page=25&page=&format=json&nojsoncallback=1
 */
 
+enum EndpointError {
+    case nilURL
+    case nilData
+    case decodeFailure(DecodingError)
+    case serviceError(String?)
+    case imageLoadFailed(String?)
+}
+
 struct NetworkController {
     static private let apiKey = "1508443e49213ff84d566777dc211f2a"
-    
-    enum EndpointError {
-        case nilURL
-        case nilData
-        case decodeFailure(DecodingError)
-        case serviceError(String?)
-        case imageLoadFailed(String?)
-    }
     
     static func searchImages(searchTerm: String, page: Int, resultsPerPage: Int = 25, callback: @escaping (SearchResult?, EndpointError?) -> Void) {
   

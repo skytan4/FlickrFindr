@@ -112,7 +112,6 @@ class PhotoTableViewCell: UITableViewCell {
         NetworkController.loadImage(url: imageURL) { [weak self] (image, error) in
             guard error == nil, let thumbnailImage = image else {
                 // Load default image
-                print("missing image")
                 return
             }
             photo.thumbnailImage = thumbnailImage
