@@ -12,7 +12,6 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
     var resultsTableView: UITableView?
     var searchController: UISearchController?
     var activityIndicator: UIActivityIndicatorView?
-    var fullSizeImageAlertView: UIAlertController?
     
     var latestSearchResult: SearchResult?
     var photosToDisplay: [Photo] = []
