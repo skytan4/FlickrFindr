@@ -92,22 +92,32 @@ class PhotoTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
    
+        titleLabel.text = nil
         loadingState = .notLoading
     }
     
     func load(photo: Photo)  {
-        titleLabel.text = photo.title
-        guard let thumbnailRef = photo.thumbnailRef, let imageURL = URL(string: thumbnailRef) else { return }
+        titleLabel.text = photo.title ?? "No Title"
+        
+        // If we already have the image, don't load it again.
+        guard photo.thumbnailImage == nil else {
+            photoImageView.image = photo.thumbnailImage!
+            return
+        }
+        
+        guard let thumbnailRef = photo.thumbnailRef,
+            let imageURL = URL(string: thumbnailRef) else { return }
         
         loadingState = .loading
         NetworkController.loadImage(url: imageURL) { [weak self] (image, error) in
-            guard error == nil, let image = image else {
+            guard error == nil, let thumbnailImage = image else {
                 // Load default image
                 print("missing image")
                 return
             }
+            photo.thumbnailImage = thumbnailImage
             DispatchQueue.main.async { [weak self] in
-                self?.loadingState = .loaded(image)
+                self?.loadingState = .loaded(thumbnailImage)
             }
         }
     }

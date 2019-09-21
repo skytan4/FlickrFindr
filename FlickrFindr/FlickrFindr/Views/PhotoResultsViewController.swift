@@ -56,8 +56,6 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
     }
     
     func searchForPicture(text: String, page: Int) {
-        isLoadingNextPage = true
-        
         DispatchQueue.main.async { [weak self] in
             self?.activityIndicator?.startAnimating()
         }
@@ -90,7 +88,7 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         
         let imageAction = UIAlertAction(title: "", style: .default, handler: nil)
-        let newimage = image.withAlignmentRectInsets(UIEdgeInsets(top: 0, left: -50, bottom: 0, right: 40))
+        let newimage = image.withAlignmentRectInsets(UIEdgeInsets(top: 0, left: -49, bottom: 0, right: 49))
         imageAction.setValue(newimage.withRenderingMode(.alwaysOriginal), forKey: "image")
         imageAction.isEnabled = false
         alert.addAction(imageAction)
@@ -123,6 +121,7 @@ extension PhotoResultsViewController: UISearchBarDelegate {
 }
 
 extension PhotoResultsViewController: UITableViewDelegate, UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return photosToDisplay.count
     }
@@ -143,6 +142,7 @@ extension PhotoResultsViewController: UITableViewDelegate, UITableViewDataSource
         let hasMorePages = currentPage + 1 <= totalPages
         
         if shouldFetchMore, hasMorePages, !isLoadingNextPage {
+            isLoadingNextPage = true
             searchForPicture(text: latestSearchText, page: currentPage + 1)
         }
         
@@ -157,16 +157,24 @@ extension PhotoResultsViewController: UITableViewDelegate, UITableViewDataSource
         tableView.deselectRow(at: indexPath, animated: true)
         
         guard let photo = photosToDisplay[safe: indexPath.row],
-            let largerImageURL = URL(string: photo.largerImageRef ?? ""),
-            let photoTitle = photo.title else { return }
+            let largerImageURL = URL(string: photo.largerImageRef ?? "") else { return }
         
-        activityIndicator?.startAnimating()
-      
-        NetworkController.loadImage(url: largerImageURL) { [weak self] (image, error) in
-            guard let image = image else { return }
+        // If we already have the image, don't load it again.
+        if let largerImage = photo.largerImage {
             DispatchQueue.main.async { [weak self] in
                 self?.activityIndicator?.stopAnimating()
-                self?.presentLargerImage(title: photoTitle, image: image)
+                self?.presentLargerImage(title: photo.title ?? "No Title", image: largerImage)
+            }
+            return
+        }
+        
+        activityIndicator?.startAnimating()
+        NetworkController.loadImage(url: largerImageURL) { [weak self] (image, error) in
+            guard let largerImage = image else { return }
+            photo.largerImage = largerImage
+            DispatchQueue.main.async { [weak self] in
+                self?.activityIndicator?.stopAnimating()
+                self?.presentLargerImage(title: photo.title ?? "No Title", image: largerImage)
             }
         }
     }

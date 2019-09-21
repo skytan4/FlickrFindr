@@ -6,9 +6,9 @@
 //  Copyright © 2019 Skyler Tanner . All rights reserved.
 //
 
-import Foundation
+import UIKit
 
-struct Photo: Codable {
+class Photo: Codable {
     let title: String?
     let thumbnailRef: String?
     let thumbnailHeight: String?
@@ -16,6 +16,8 @@ struct Photo: Codable {
     let largerImageRef: String?
     let largerImageHeight: String?
     let largerImageWidth: String?
+    var largerImage: UIImage?
+    var thumbnailImage: UIImage?
     
     enum CodingKeys: String, CodingKey {
         case title = "title"
