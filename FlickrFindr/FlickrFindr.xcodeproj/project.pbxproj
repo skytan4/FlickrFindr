@@ -17,6 +17,10 @@
 		1C2B4AD9233314F1003645FD /* FlickrFindrUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4AD8233314F1003645FD /* FlickrFindrUITests.swift */; };
 		1C2B4AE72333150D003645FD /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4AE62333150D003645FD /* SearchResult.swift */; };
 		1C2B4AE923331536003645FD /* NetworkController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4AE823331536003645FD /* NetworkController.swift */; };
+		1C6CCCF32334A11D0041D849 /* SearchResultInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6CCCF22334A11D0041D849 /* SearchResultInfo.swift */; };
+		1C6CCCF52334A13F0041D849 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6CCCF42334A13F0041D849 /* Photo.swift */; };
+		1C6CCCF72334A6D80041D849 /* PhotoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6CCCF62334A6D80041D849 /* PhotoTableViewCell.swift */; };
+		1C6CCCFB2335C5340041D849 /* Collection+Safe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6CCCFA2335C5340041D849 /* Collection+Safe.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +57,10 @@
 		1C2B4ADA233314F1003645FD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1C2B4AE62333150D003645FD /* SearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResult.swift; sourceTree = "<group>"; };
 		1C2B4AE823331536003645FD /* NetworkController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkController.swift; sourceTree = "<group>"; };
+		1C6CCCF22334A11D0041D849 /* SearchResultInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultInfo.swift; sourceTree = "<group>"; };
+		1C6CCCF42334A13F0041D849 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
+		1C6CCCF62334A6D80041D849 /* PhotoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoTableViewCell.swift; sourceTree = "<group>"; };
+		1C6CCCFA2335C5340041D849 /* Collection+Safe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Safe.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +114,7 @@
 				1C2B4AC4233314F1003645FD /* Info.plist */,
 				1C2B4ABF233314F1003645FD /* Assets.xcassets */,
 				1C2B4AB5233314F0003645FD /* AppDelegate.swift */,
+				1C6CCCFA2335C5340041D849 /* Collection+Safe.swift */,
 				1C2B4AEC2333271B003645FD /* Views */,
 				1C2B4AEA23332700003645FD /* Models */,
 				1C2B4AEB2333270E003645FD /* Controllers */,
@@ -135,6 +144,8 @@
 			isa = PBXGroup;
 			children = (
 				1C2B4AE62333150D003645FD /* SearchResult.swift */,
+				1C6CCCF22334A11D0041D849 /* SearchResultInfo.swift */,
+				1C6CCCF42334A13F0041D849 /* Photo.swift */,
 				1C2B4ABC233314F0003645FD /* FlickrFindr.xcdatamodeld */,
 			);
 			path = Models;
@@ -154,6 +165,7 @@
 				1C2B4AB9233314F0003645FD /* Main.storyboard */,
 				1C2B4AC1233314F1003645FD /* LaunchScreen.storyboard */,
 				1C2B4AB7233314F0003645FD /* ViewController.swift */,
+				1C6CCCF62334A6D80041D849 /* PhotoTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -289,10 +301,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C6CCCF72334A6D80041D849 /* PhotoTableViewCell.swift in Sources */,
+				1C6CCCF52334A13F0041D849 /* Photo.swift in Sources */,
 				1C2B4AE923331536003645FD /* NetworkController.swift in Sources */,
 				1C2B4ABE233314F0003645FD /* FlickrFindr.xcdatamodeld in Sources */,
 				1C2B4AB8233314F0003645FD /* ViewController.swift in Sources */,
 				1C2B4AE72333150D003645FD /* SearchResult.swift in Sources */,
+				1C6CCCFB2335C5340041D849 /* Collection+Safe.swift in Sources */,
+				1C6CCCF32334A11D0041D849 /* SearchResultInfo.swift in Sources */,
 				1C2B4AB6233314F0003645FD /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
