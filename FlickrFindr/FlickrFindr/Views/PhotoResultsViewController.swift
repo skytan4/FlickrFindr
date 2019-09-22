@@ -198,6 +198,8 @@ extension PhotoResultsViewController: UISearchBarDelegate {
    
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         reloadData()
+        
+        resultsTableView?.setContentOffset(.zero, animated: false)
     }
 }
 
@@ -230,10 +232,6 @@ extension PhotoResultsViewController: UITableViewDataSource {
         
         // Display search suggestions when entering search text
         guard !userIsTyping else {
-            if resultsTableView?.contentOffset.y ?? 0.0 > CGFloat.zero {
-                resultsTableView?.setContentOffset(.zero, animated:true)
-            }
-            
             // For convenience, re-using the PhotoTableViewCell to display recent search terms
             cell.titleLabel.text = searchTerms[safe: indexPath.row]
             return cell
