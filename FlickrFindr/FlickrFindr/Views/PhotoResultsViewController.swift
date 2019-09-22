@@ -104,32 +104,35 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
     }
     
     func presentLargerImage(title: String, image: UIImage) {
-        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
-        
-        let imageAction = UIAlertAction(title: "", style: .default, handler: nil)
-        
-        // this is not the best solution, but given that the size is always 150 x 150 this helps ensure it is centered
-        let centeredImage = image.withAlignmentRectInsets(UIEdgeInsets(top: 0, left: -49, bottom: 0, right: 49))
-        imageAction.setValue(centeredImage.withRenderingMode(.alwaysOriginal), forKey: "image")
-        imageAction.isEnabled = false
-        alert.addAction(imageAction)
-        
-        let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
-            alert.dismiss(animated: true, completion: nil)
+        DispatchQueue.main.async { [weak self] in
+            let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+            
+            let imageAction = UIAlertAction(title: "", style: .default, handler: nil)
+            
+            imageAction.setValue(image.withRenderingMode(.alwaysOriginal), forKey: "image")
+            imageAction.isEnabled = false
+            alert.addAction(imageAction)
+            
+            let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
+                alert.dismiss(animated: true, completion: nil)
+            }
+            alert.addAction(dismissAction)
+            
+            self?.activityIndicator?.stopAnimating()
+            self?.present(alert, animated: true, completion: nil)
         }
-        alert.addAction(dismissAction)
-        
-        presentModal(modal: alert)
     }
     
     func presentNoResultsModal() {
-        let alert = UIAlertController(title: "No Results", message: nil, preferredStyle: .alert)
-        let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
-            alert.dismiss(animated: true, completion: nil)
+        DispatchQueue.main.async { [weak self] in
+            let alert = UIAlertController(title: "No Results", message: nil, preferredStyle: .alert)
+            let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
+                alert.dismiss(animated: true, completion: nil)
+            }
+            alert.addAction(dismissAction)
+            self?.activityIndicator?.stopAnimating()
+            self?.present(alert, animated: true, completion: nil)
         }
-        alert.addAction(dismissAction)
-        
-        presentModal(modal: alert)
     }
     
     func displayError(error: EndpointError) {
@@ -149,19 +152,15 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
             message = "The service is having issues, please try again later"
         }
         
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
-            alert.dismiss(animated: true, completion: nil)
-        }
-        alert.addAction(dismissAction)
-        
-        presentModal(modal: alert)
-    }
-    
-    private func presentModal(modal: UIAlertController) {
         DispatchQueue.main.async { [weak self] in
+            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+            let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
+                alert.dismiss(animated: true, completion: nil)
+            }
+            alert.addAction(dismissAction)
+            
             self?.activityIndicator?.stopAnimating()
-            self?.present(modal, animated: true, completion: nil)
+            self?.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -289,12 +288,7 @@ extension PhotoResultsViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let height = photosToDisplay[safe: indexPath.row]?.thumbnailHeight,
-            let intValue = Int(height) else {
-            return defaultCellHeight
-        }
-        
-        return CGFloat(intValue)
+        return defaultCellHeight
     }
     
 }

@@ -26,7 +26,7 @@ struct NetworkController {
     static func searchImages(searchTerm: String, page: Int, resultsPerPage: Int = 25, callback: @escaping (SearchResult?, EndpointError?) -> Void) {
   
         let searchText = searchTerm.replacingOccurrences(of: " ", with: "+")
-        guard let imageSearchURL = URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(NetworkController.apiKey)&text=\(searchText)&media=photos&extras=url_q%2C+url_sq&per_page=\(resultsPerPage)&page=\(page)&format=json&nojsoncallback=1") else {
+        guard let imageSearchURL = URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(NetworkController.apiKey)&text=\(searchText)&media=photos&extras=url_sq%2C+url_s&per_page=\(resultsPerPage)&page=\(page)&format=json&nojsoncallback=1") else {
             callback(nil, .nilURL)
             return
         }
