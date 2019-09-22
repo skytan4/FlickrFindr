@@ -190,11 +190,6 @@ extension PhotoResultsViewController: UISearchBarDelegate {
         searchTerms.insert(searchText, at: 0)
         resetSearch()
         searchImages(text: searchText, page: 1)
-        reloadData()
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        reloadData()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
