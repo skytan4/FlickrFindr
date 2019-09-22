@@ -108,11 +108,11 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         NetworkController.cancelNetworkCalls()
     }
     
-    func presentLargerImage(title: String, image: UIImage) {
+    func presentLargerImage(image: UIImage) {
         DispatchQueue.main.async { [weak self] in
             guard let unwrappedSelf = self else { return }
             
-            let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+            let alert = UIAlertController(title: "", message: nil, preferredStyle: .alert)
 
             // leveraging functionality that comes with alertController to save creating a custom view.
             let imageAction = UIAlertAction(title: "", style: .default, handler: nil)
@@ -284,7 +284,7 @@ extension PhotoResultsViewController: UITableViewDelegate {
         
         // If we already have the image, don't load it again.
         if let largerImage = photo.largerImage {
-            presentLargerImage(title: photo.title ?? "No Title", image: largerImage)
+            presentLargerImage(image: largerImage)
             return
         } else {
             downloadLargerImage(photo: photo)
