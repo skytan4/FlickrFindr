@@ -19,7 +19,12 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
     }
     
     private var latestSearchResult: SearchResult?
-    var searchTerms: [String] = []
+    
+    var searchTerms: [String] = [] {
+        didSet {
+            searchTerms.removeDuplicates()
+        }
+    }
     var photosToDisplay: [Photo] = [] {
         didSet {
             reloadData()
@@ -36,7 +41,7 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
     }
     
     func setupViews() {
-        title = "Flickr Findr"
+        title = NSLocalizedString("Flickr Findr", comment: "Photo search results screen title")
         
         activityIndicator = UIActivityIndicatorView(frame: .zero)
         activityIndicator?.style = .whiteLarge
@@ -53,7 +58,7 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         
         searchController?.delegate = self
         searchController?.dimsBackgroundDuringPresentation = false
-        searchController?.searchBar.placeholder = "Search For a Photo"
+        searchController?.searchBar.placeholder = NSLocalizedString("Search For a Photo", comment: "Placeholder text for searchController searchBar")
         searchController?.searchBar.delegate = self
         
         definesPresentationContext = true
@@ -105,33 +110,31 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
     
     func presentLargerImage(title: String, image: UIImage) {
         DispatchQueue.main.async { [weak self] in
+            guard let unwrappedSelf = self else { return }
+            
             let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
-            
+
+            // leveraging functionality that comes with alertController to save creating a custom view.
             let imageAction = UIAlertAction(title: "", style: .default, handler: nil)
-            
             imageAction.setValue(image.withRenderingMode(.alwaysOriginal), forKey: "image")
             imageAction.isEnabled = false
             alert.addAction(imageAction)
             
-            let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
-                alert.dismiss(animated: true, completion: nil)
-            }
-            alert.addAction(dismissAction)
+            alert.addAction(unwrappedSelf.dismissActionFor(alert: alert))
             
-            self?.activityIndicator?.stopAnimating()
-            self?.present(alert, animated: true, completion: nil)
+            unwrappedSelf.activityIndicator?.stopAnimating()
+            unwrappedSelf.present(alert, animated: true, completion: nil)
         }
     }
     
     func presentNoResultsModal() {
         DispatchQueue.main.async { [weak self] in
+            guard let unwrappedSelf = self else { return }
+            
             let alert = UIAlertController(title: "No Results", message: nil, preferredStyle: .alert)
-            let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
-                alert.dismiss(animated: true, completion: nil)
-            }
-            alert.addAction(dismissAction)
-            self?.activityIndicator?.stopAnimating()
-            self?.present(alert, animated: true, completion: nil)
+            alert.addAction(unwrappedSelf.dismissActionFor(alert: alert))
+            unwrappedSelf.activityIndicator?.stopAnimating()
+            unwrappedSelf.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -140,7 +143,7 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         switch error {
         case .decodeFailure(let decodingError):
             print(decodingError)
-            message = "The service is having a problem"
+            message = NSLocalizedString("Oops, something happened that we did not expect!", comment: "Message for decoding error alert")
         case .imageLoadFailed(let reason):
             print(reason ?? "Nil reason for image load failure")
             // return without displaying error so we do not inturrupt user experience
@@ -149,18 +152,23 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
             message = "There was an issue, please try again"
         case .serviceError(let serviceMessage):
             print(serviceMessage ?? "Nil service error message")
-            message = "The service is having issues, please try again later"
+            message = NSLocalizedString("There was an issue, please try again later", comment: "Message for service error")
         }
         
         DispatchQueue.main.async { [weak self] in
-            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-            let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
-                alert.dismiss(animated: true, completion: nil)
-            }
-            alert.addAction(dismissAction)
-            
-            self?.activityIndicator?.stopAnimating()
-            self?.present(alert, animated: true, completion: nil)
+            guard let unwrappedSelf = self else { return }
+           
+            let alert = UIAlertController(title: NSLocalizedString("Error", comment: "Title for error alert"), message: message, preferredStyle: .alert)
+            alert.addAction(unwrappedSelf.dismissActionFor(alert: alert))
+        
+            unwrappedSelf.activityIndicator?.stopAnimating()
+            unwrappedSelf.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    private func dismissActionFor(alert: UIAlertController) -> UIAlertAction {
+        return UIAlertAction(title: NSLocalizedString("Dismiss", comment: "Title for dismiss alert action"), style: .default) { _ in
+            alert.dismiss(animated: true, completion: nil)
         }
     }
     
@@ -203,10 +211,12 @@ extension PhotoResultsViewController: UISearchBarDelegate {
 extension PhotoResultsViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if userIsTyping {
-            return "Recent Search Terms"
+        if userIsTyping, !searchTerms.isEmpty {
+            return NSLocalizedString("Recent Search Terms", comment: "Title for recent search terms")
+        } else if !userIsTyping, !photosToDisplay.isEmpty {
+            return NSLocalizedString("Results", comment: "Title for search results")
         } else {
-            return "Results"
+            return ""
         }
     }
     
@@ -270,6 +280,8 @@ extension PhotoResultsViewController: UITableViewDelegate {
             resetSearch()
             
             let searchTerm = searchTerms[safe: indexPath.row] ?? ""
+            searchTerms.remove(at: indexPath.row) // ** must remove search term before re-inserting **
+            searchTerms.insert(searchTerm, at: 0)
             searchController?.searchBar.text = searchTerm
             searchImages(text: searchTerm, page: 1)
             return

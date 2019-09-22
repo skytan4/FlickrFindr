@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C15917B2338022A00A49E58 /* Array+RemoveDuplicates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C15917A2338022A00A49E58 /* Array+RemoveDuplicates.swift */; };
 		1C2B4AB6233314F0003645FD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4AB5233314F0003645FD /* AppDelegate.swift */; };
 		1C2B4AB8233314F0003645FD /* PhotoResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4AB7233314F0003645FD /* PhotoResultsViewController.swift */; };
 		1C2B4ABE233314F0003645FD /* FlickrFindr.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1C2B4ABC233314F0003645FD /* FlickrFindr.xcdatamodeld */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C15917A2338022A00A49E58 /* Array+RemoveDuplicates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+RemoveDuplicates.swift"; sourceTree = "<group>"; };
 		1C2B4AB2233314F0003645FD /* FlickrFindr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlickrFindr.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C2B4AB5233314F0003645FD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1C2B4AB7233314F0003645FD /* PhotoResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoResultsViewController.swift; sourceTree = "<group>"; };
@@ -113,6 +115,7 @@
 				1C2B4ABF233314F1003645FD /* Assets.xcassets */,
 				1C2B4AB5233314F0003645FD /* AppDelegate.swift */,
 				1C6CCCFA2335C5340041D849 /* Collection+Safe.swift */,
+				1C15917A2338022A00A49E58 /* Array+RemoveDuplicates.swift */,
 				1C2B4AEC2333271B003645FD /* Views */,
 				1C2B4AEA23332700003645FD /* Models */,
 				1C2B4AEB2333270E003645FD /* Controllers */,
@@ -300,6 +303,7 @@
 				1C6CCCF72334A6D80041D849 /* PhotoTableViewCell.swift in Sources */,
 				1C6CCCF52334A13F0041D849 /* Photo.swift in Sources */,
 				1C2B4AE923331536003645FD /* NetworkController.swift in Sources */,
+				1C15917B2338022A00A49E58 /* Array+RemoveDuplicates.swift in Sources */,
 				1C2B4ABE233314F0003645FD /* FlickrFindr.xcdatamodeld in Sources */,
 				1C2B4AB8233314F0003645FD /* PhotoResultsViewController.swift in Sources */,
 				1C2B4AE72333150D003645FD /* SearchResult.swift in Sources */,
