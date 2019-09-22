@@ -107,8 +107,10 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         
         let imageAction = UIAlertAction(title: "", style: .default, handler: nil)
-        let newimage = image.withAlignmentRectInsets(UIEdgeInsets(top: 0, left: -49, bottom: 0, right: 49))
-        imageAction.setValue(newimage.withRenderingMode(.alwaysOriginal), forKey: "image")
+        
+        // this is not the best solution, but given that the size is always 150 x 150 this helps ensure it is centered
+        let centeredImage = image.withAlignmentRectInsets(UIEdgeInsets(top: 0, left: -49, bottom: 0, right: 49))
+        imageAction.setValue(centeredImage.withRenderingMode(.alwaysOriginal), forKey: "image")
         imageAction.isEnabled = false
         alert.addAction(imageAction)
         
@@ -137,13 +139,13 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
             print(decodingError)
             message = "The service is having a problem"
         case .imageLoadFailed(let reason):
-            print(reason)
+            print(reason ?? "Nil reason for image load failure")
             // return without displaying error so we do not inturrupt user experience
             return
         case .nilData, .nilURL:
             message = "There was an issue, please try again"
         case .serviceError(let serviceMessage):
-            print(serviceMessage)
+            print(serviceMessage ?? "Nil service error message")
             message = "The service is having issues, please try again later"
         }
         
