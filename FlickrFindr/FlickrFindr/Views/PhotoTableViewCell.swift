@@ -16,7 +16,7 @@ enum LoadingState {
 
 class PhotoTableViewCell: UITableViewCell {
     private let activityIndicator = UIActivityIndicatorView(style: .white)
-    private let titleLabel = UILabel()
+    let titleLabel = UILabel()
     private let photoImageView = UIImageView()
     
     private var loadingState: LoadingState = .notLoading {
@@ -84,7 +84,6 @@ class PhotoTableViewCell: UITableViewCell {
                                     titleRightConstraint,
                                     titleBottomConstraint])
 
-            
         activityIndicator.color = .blue
         titleLabel.numberOfLines = 2
     }
@@ -109,9 +108,10 @@ class PhotoTableViewCell: UITableViewCell {
             let imageURL = URL(string: thumbnailRef) else { return }
         
         loadingState = .loading
+        
         NetworkController.loadImage(url: imageURL) { [weak self] (image, error) in
             guard error == nil, let thumbnailImage = image else {
-                // Load default image
+                // Load a default image
                 return
             }
             photo.thumbnailImage = thumbnailImage

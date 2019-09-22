@@ -13,11 +13,19 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
     var searchController: UISearchController?
     var activityIndicator: UIActivityIndicatorView?
     
-    var latestSearchResult: SearchResult?
-    var photosToDisplay: [Photo] = []
-    var searchTerms: [String] = []
-    var latestSearchText: String?
     private var isLoadingNextPage = false
+    private var userIsTyping: Bool {
+        return searchController?.searchBar.isFirstResponder ?? false
+    }
+    
+    private var latestSearchText: String?
+    private var latestSearchResult: SearchResult?
+    var searchTerms: [String] = []
+    var photosToDisplay: [Photo] = [] {
+        didSet {
+            reloadData()
+        }
+    }
    
     private let defaultCellHeight: CGFloat = 75.0
     private let pictureCellReuseIdentifier = "pictureCell"
@@ -36,13 +44,13 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         activityIndicator?.color = .blue
         
         resultsTableView = UITableView(frame: view.frame)
-        activityIndicator?.center = resultsTableView!.center
         resultsTableView?.register(PhotoTableViewCell.self, forCellReuseIdentifier: pictureCellReuseIdentifier)
-        searchController = UISearchController(searchResultsController: nil)
-   
-        resultsTableView?.tableHeaderView = searchController?.searchBar
         resultsTableView?.delegate = self
         resultsTableView?.dataSource = self
+        activityIndicator?.center = resultsTableView!.center
+        
+        searchController = UISearchController(searchResultsController: nil)
+        resultsTableView?.tableHeaderView = searchController?.searchBar
         
         searchController?.delegate = self
         searchController?.dimsBackgroundDuringPresentation = false
@@ -55,21 +63,39 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         view.addSubview(activityIndicator!)
     }
     
-    func searchForPicture(text: String, page: Int) {
-        DispatchQueue.main.async { [weak self] in
-            self?.activityIndicator?.startAnimating()
-        }
+    func searchImages(text: String, page: Int) {
+        activityIndicator?.startAnimating()
         
         NetworkController.searchImages(searchTerm: text, page: page) { [weak self] (result, error) in
-            guard let result = result else { return }
+            guard error == nil else {
+                self?.displayError(error: error!)
+                return
+            }
+            
+            guard let result = result, let photos = result.resultInfo.photos, !photos.isEmpty else {
+                self?.presentNoResultsModal()
+                return
+            }
             self?.latestSearchResult = result
             self?.latestSearchText = text
-            self?.photosToDisplay.append(contentsOf: result.resultInfo.photos ?? [])
+            self?.photosToDisplay.append(contentsOf: photos)
             self?.isLoadingNextPage = false
-            DispatchQueue.main.async { [weak self] in
-                self?.activityIndicator?.stopAnimating()
-                self?.resultsTableView?.reloadData()
+        }
+    }
+    
+    func downloadLargerImage(photo: Photo) {
+        guard let largerImageURL = URL(string: photo.largerImageRef ?? "") else { return }
+        
+        activityIndicator?.startAnimating()
+        NetworkController.loadImage(url: largerImageURL) { [weak self] (image, error) in
+            guard error == nil else {
+                self?.displayError(error: error!)
+                return
             }
+            
+            guard let largerImage = image else { return }
+            photo.largerImage = largerImage
+            self?.presentLargerImage(title: photo.title ?? "No Title", image: largerImage)
         }
     }
     
@@ -78,10 +104,6 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         latestSearchResult = nil
         photosToDisplay = []
         NetworkController.cancelNetworkCalls()
-        DispatchQueue.main.async { [weak self] in
-            self?.activityIndicator?.stopAnimating()
-            self?.resultsTableView?.reloadData()
-        }
     }
     
     func presentLargerImage(title: String, image: UIImage) {
@@ -98,37 +120,120 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         }
         alert.addAction(dismissAction)
         
-        present(alert, animated: true, completion: nil)
+        presentModal(modal: alert)
+    }
+    
+    func presentNoResultsModal() {
+        let alert = UIAlertController(title: "No Results", message: nil, preferredStyle: .alert)
+        let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
+            alert.dismiss(animated: true, completion: nil)
+        }
+        alert.addAction(dismissAction)
+        
+        presentModal(modal: alert)
+    }
+    
+    func displayError(error: EndpointError) {
+        let message: String
+        switch error {
+        case .decodeFailure(let decodingError):
+            print(decodingError)
+            message = "The service is having a problem"
+        case .imageLoadFailed(let reason):
+            print(reason)
+            // return without displaying error so we do not inturrupt user experience
+            return
+        case .nilData, .nilURL:
+            message = "There was an issue, please try again"
+        case .serviceError(let serviceMessage):
+            print(serviceMessage)
+            message = "The service is having issues, please try again later"
+        }
+        
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        let dismissAction = UIAlertAction(title: "Dismiss", style: .default) { _ in
+            alert.dismiss(animated: true, completion: nil)
+        }
+        alert.addAction(dismissAction)
+        
+        presentModal(modal: alert)
+    }
+    
+    private func presentModal(modal: UIAlertController) {
+        DispatchQueue.main.async { [weak self] in
+            self?.activityIndicator?.stopAnimating()
+            self?.present(modal, animated: true, completion: nil)
+        }
+    }
+    
+    private func reloadData() {
+        DispatchQueue.main.async { [weak self] in
+            self?.activityIndicator?.stopAnimating()
+            self?.resultsTableView?.reloadData()
+        }
     }
     
 }
+
+// MARK: -- SEARCHBAR DELEGATE
 
 extension PhotoResultsViewController: UISearchBarDelegate {
   
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
-        searchTerms.append(searchText)
+        searchTerms.insert(searchText, at: 0)
         resetSearch()
-        searchForPicture(text: searchText, page: 1)
+        searchImages(text: searchText, page: 1)
+        reloadData()
     }
     
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText == "" {
-            resetSearch()
-        }
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        reloadData()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        reloadData()
     }
    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        reloadData()
+    }
 }
 
-extension PhotoResultsViewController: UITableViewDelegate, UITableViewDataSource {
+// MARK: -- TABLEVIEW DATASOURCE
+
+extension PhotoResultsViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if userIsTyping {
+            return "Recent Search Terms"
+        } else {
+            return "Results"
+        }
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosToDisplay.count
+        if userIsTyping {
+            return searchTerms.count
+        } else {
+            return photosToDisplay.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = resultsTableView?.dequeueReusableCell(withIdentifier: pictureCellReuseIdentifier) as? PhotoTableViewCell else {
             return UITableViewCell()
+        }
+        
+        // Display search suggestions when entering search text
+        guard !userIsTyping else {
+            if resultsTableView?.contentOffset.y ?? 0.0 > CGFloat.zero {
+                resultsTableView?.setContentOffset(.zero, animated:true)
+            }
+            
+            // For convenience, re-using the PhotoTableViewCell to display recent search terms
+            cell.titleLabel.text = searchTerms[safe: indexPath.row]
+            return cell
         }
         
         guard let resultInfo = latestSearchResult?.resultInfo,
@@ -139,11 +244,11 @@ extension PhotoResultsViewController: UITableViewDelegate, UITableViewDataSource
         }
         
         let shouldFetchMore = indexPath.row >= photosToDisplay.count - 11
-        let hasMorePages = currentPage + 1 <= totalPages
+        let hasMorePages = (currentPage + 1) <= totalPages
         
         if shouldFetchMore, hasMorePages, !isLoadingNextPage {
             isLoadingNextPage = true
-            searchForPicture(text: latestSearchText, page: currentPage + 1)
+            searchImages(text: latestSearchText, page: currentPage + 1)
         }
         
         if let photo = photosToDisplay[safe: indexPath.row] {
@@ -152,31 +257,36 @@ extension PhotoResultsViewController: UITableViewDelegate, UITableViewDataSource
         
         return cell
     }
+}
+
+// MARK: -- TABLEVIEW DELEGATE
+
+extension PhotoResultsViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let photo = photosToDisplay[safe: indexPath.row],
-            let largerImageURL = URL(string: photo.largerImageRef ?? "") else { return }
-        
-        // If we already have the image, don't load it again.
-        if let largerImage = photo.largerImage {
-            DispatchQueue.main.async { [weak self] in
-                self?.activityIndicator?.stopAnimating()
-                self?.presentLargerImage(title: photo.title ?? "No Title", image: largerImage)
-            }
+        // Clear out current results and re-search the selected search term
+        guard !userIsTyping else {
+            searchController?.searchBar.resignFirstResponder()
+            resetSearch()
+            
+            let searchTerm = searchTerms[safe: indexPath.row] ?? ""
+            searchController?.searchBar.text = searchTerm
+            searchImages(text: searchTerm, page: 1)
             return
         }
         
-        activityIndicator?.startAnimating()
-        NetworkController.loadImage(url: largerImageURL) { [weak self] (image, error) in
-            guard let largerImage = image else { return }
-            photo.largerImage = largerImage
-            DispatchQueue.main.async { [weak self] in
-                self?.activityIndicator?.stopAnimating()
-                self?.presentLargerImage(title: photo.title ?? "No Title", image: largerImage)
-            }
+        guard let photo = photosToDisplay[safe: indexPath.row] else { return }
+        
+        // If we already have the image, don't load it again.
+        if let largerImage = photo.largerImage {
+            presentLargerImage(title: photo.title ?? "No Title", image: largerImage)
+            return
+        } else {
+            downloadLargerImage(photo: photo)
         }
+        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
