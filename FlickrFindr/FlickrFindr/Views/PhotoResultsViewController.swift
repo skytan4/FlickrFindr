@@ -18,7 +18,6 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
         return searchController?.searchBar.isFirstResponder ?? false
     }
     
-    private var latestSearchText: String?
     private var latestSearchResult: SearchResult?
     var searchTerms: [String] = []
     var photosToDisplay: [Photo] = [] {
@@ -77,7 +76,6 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
                 return
             }
             self?.latestSearchResult = result
-            self?.latestSearchText = text
             self?.photosToDisplay.append(contentsOf: photos)
             self?.isLoadingNextPage = false
         }
@@ -100,7 +98,6 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
     }
     
     func resetSearch() {
-        latestSearchText = nil
         latestSearchResult = nil
         photosToDisplay = []
         NetworkController.cancelNetworkCalls()
@@ -239,7 +236,7 @@ extension PhotoResultsViewController: UITableViewDataSource {
         guard let resultInfo = latestSearchResult?.resultInfo,
             let currentPage = resultInfo.currentPage,
             let totalPages = resultInfo.totalPages,
-            let latestSearchText = self.latestSearchText else {
+            let latestSearchText = searchTerms.first else {
             return cell
         }
         
