@@ -98,7 +98,7 @@ class PhotoResultsViewController: UIViewController, UISearchControllerDelegate {
             
             guard let largerImage = image else { return }
             photo.largerImage = largerImage
-            self?.presentLargerImage(title: photo.title ?? "No Title", image: largerImage)
+            self?.presentLargerImage(image: largerImage)
         }
     }
     
